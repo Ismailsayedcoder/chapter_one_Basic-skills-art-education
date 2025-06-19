@@ -46,8 +46,9 @@
         }
         .timeline-item-wrapper {
             position: relative;
-            padding-right: 2rem;
-            padding-left: 2rem;
+            display: flex; /* Ensure flex for positioning */
+            justify-content: flex-end; /* Push content to the right edge of the wrapper */
+            width: 100%; /* Take full width to allow centering of the line */
         }
         .timeline-item-wrapper::before {
             content: '';
@@ -56,17 +57,15 @@
             height: 1.5rem;
             background-color: #8B5A2B;
             border-radius: 50%;
-            right: calc(50% - 0.75rem);
-            top: 0.5rem;
+            top: 0.5rem; /* Align with the top of the content box */
             z-index: 10;
             border: 4px solid #FDF5E6;
             box-shadow: 0 0 0 3px #D2B48C;
-        }
-        .timeline-item-wrapper.left-aligned::before {
-            right: unset;
-            left: calc(50% - 0.75rem);
-        }
 
+            left: 50%; /* Center relative to the parent, then adjust by half its width */
+            transform: translateX(-50%); /* Move back by half its width */
+        }
+        
         /* Animation classes */
         .fade-in-slide-up {
             opacity: 0;
@@ -121,10 +120,49 @@
             transition: opacity 0.3s ease-in-out;
             z-index: 1000;
             cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            width: 3.5rem;
+            height: 3.5rem;
         }
         .scroll-to-top.visible {
             display: flex;
             opacity: 1;
+        }
+
+        /* Timeline detail animation */
+        .detail-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.7s ease-out, opacity 0.7s ease-out;
+            opacity: 0;
+        }
+        .detail-content.show {
+            max-height: 500px;
+            opacity: 1;
+        }
+
+        /* Main section reveal animation */
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+        .section-reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Navigation active state */
+        .nav-link.active {
+            color: #8B5A2B;
+            border-bottom: 2px solid #8B5A2B;
+            padding-bottom: 4px;
+        }
+
+        /* Button click/tap effect */
+        .button-effect:active {
+            transform: scale(0.98);
         }
     </style>
 </head>
@@ -132,14 +170,14 @@
 
     <header class="bg-gradient-to-r from-[#D2B48C] to-[#C09A78] shadow-xl py-6">
         <div class="container mx-auto px-6 text-center">
-            <h1 class="text-4xl md:text-5xl font-extrabold text-[#6B4F4F] tracking-wide mb-2 section-header-animation">الفن من الخامات البيئية</h1>
-            <p class="text-xl text-[#8B5A2B] font-semibold section-header-animation" style="transition-delay: 0.2s;">دليل إبداعي لتحويل المستهلكات إلى كنوز فنية وتنمية مهارات الأطفال</p>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-[#6B4F4F] tracking-wide mb-2 section-header-animation">الفصل الأول</h1>
+            <p class="text-xl text-[#8B5A2B] font-semibold section-header-animation" style="transition-delay: 0.2s;">الفن من الخامات البيئية: دليل إبداعي لتحويل المستهلكات إلى كنوز فنية وتنمية مهارات الأطفال</p>
             <nav class="mt-6 section-header-animation" style="transition-delay: 0.4s;">
                 <ul class="flex justify-center space-x-6 space-x-reverse">
-                    <li><a href="#why" class="text-[#6B4F4F] hover:text-[#8B5A2B] font-bold text-lg transition-colors duration-300">لماذا؟</a></li>
-                    <li><a href="#materials" class="text-[#6B4F4F] hover:text-[#8B5A2B] font-bold text-lg transition-colors duration-300">المعرض</a></li>
-                    <li><a href="#teacher-role" class="text-[#6B4F4F] hover:text-[#8B5A2B] font-bold text-lg transition-colors duration-300">دور المعلمة</a></li>
-                    <li><a href="#impact-chart" class="text-[#6B4F4F] hover:text-[#8B5A2B] font-bold text-lg transition-colors duration-300">الأثر</a></li>
+                    <li><a href="#why" class="nav-link text-[#6B4F4F] hover:text-[#8B5A2B] font-bold text-lg transition-colors duration-300">لماذا؟</a></li>
+                    <li><a href="#materials" class="nav-link text-[#6B4F4F] hover:text-[#8B5A2B] font-bold text-lg transition-colors duration-300">المعرض</a></li>
+                    <li><a href="#teacher-role" class="nav-link text-[#6B4F4F] hover:text-[#8B5A2B] font-bold text-lg transition-colors duration-300">دور المعلمة</a></li>
+                    <li><a href="#impact-chart" class="nav-link text-[#6B4F4F] hover:text-[#8B5A2B] font-bold text-lg transition-colors duration-300">الأثر</a></li>
                 </ul>
             </nav>
         </div>
@@ -147,18 +185,24 @@
 
     <main class="container mx-auto px-6 py-12">
         
-        <section id="why" class="mb-24">
-            <h2 class="text-4xl font-bold text-center text-[#8B5A2B] mb-10 pb-4 border-b-2 border-[#D2B48C] section-header-animation">لماذا إعادة التدوير في الفن؟</h2>
-            <div class="text-center mb-10 max-w-4xl mx-auto fade-in-slide-up">
+        <section id="why" class="mb-24 section-reveal">
+            <h2 class="text-4xl font-bold text-center text-[#8B5A2B] mb-10 pb-4 border-b-2 border-[#D2B48C]">لماذا إعادة التدوير في الفن؟</h2>
+            <div class="text-right mb-10 max-w-4xl mx-auto">
                 <p class="text-lg leading-relaxed">في هذا القسم، نستكشف الأسباب العميقة والفوائد المتعددة لدمج إعادة التدوير في العملية الفنية والتربوية. إنها ليست مجرد وسيلة للحفاظ على كوكبنا، بل هي استثمار في تنمية جيل مبدع وواعٍ بيئياً. ستجد هنا شرحاً مفصلاً لكيفية مساهمة هذه الممارسة في تقليل حجم النفايات المتراكمة يومياً، بالإضافة إلى تأثيرها الإيجابي المباشر على تطور مهارات الأطفال المختلفة في مرحلة ما قبل المدرسة. هذه الممارسات تغرس فيهم قيمًا حياتية مهمة وتنمي إبداعهم وحسهم الفني. يعكس هذا النهج مبادئ **التعلم البنائي (Constructivism)** حيث يكتسب الأطفال المعرفة والمهارات من خلال التفاعل المباشر مع البيئة المحيطة، مما يدعم تطوير **مهارات القرن الحادي والعشرين** مثل الإبداع، التفكير النقدي، والتعاون.</p>
+                <button class="toggle-text-btn mt-4 px-6 py-2 bg-[#8B5A2B] text-white rounded-full shadow-md hover:bg-[#6B4F4F] transition-colors duration-300 button-effect">اقرأ المزيد</button>
+                <div class="expandable-content hidden mt-4 text-right">
+                    <p class="text-md leading-relaxed mb-3">تُعد إعادة تدوير المخلفات من الأساليب الفعالة التي تساهم في تقليل التلوث البيئي الناتج عن تراكم النفايات، خاصة المواد التي يصعب التخلص منها. إن دمج هذه الممارسات في التربية الفنية للأطفال لا يعلمهم فقط كيفية تحويل المواد البسيطة إلى أعمال فنية جميلة، بل ينمي لديهم أيضاً الوعي بأهمية الاستدامة والحفاظ على الموارد. هذا يتماشى مع مفاهيم الاستدامة التي تتجاوز مجرد الحماية البيئية لتشمل الجوانب الاجتماعية والاقتصادية.</p>
+                    <p class="text-md leading-relaxed mb-3">علاوة على ذلك، فإن عملية صناعة الفن من الخامات البيئية تشجع الأطفال على التفكير الإبداعي وحل المشكلات بطرق غير تقليدية. فعندما يواجهون تحدياً في تحويل مادة معينة، يضطرون إلى التفكير في حلول مبتكرة، مما يعزز قدراتهم المعرفية والإدراكية. هذا النوع من التعلم النشط يرسخ المفاهيم بشكل أعمق ويجعل العملية التعليمية ممتعة وذات مغزى.</p>
+                    <p class="text-md leading-relaxed">كما تساهم هذه الأنشطة في تطوير المهارات الاجتماعية والعاطفية للأطفال. فغالباً ما تتطلب المشاريع الفنية التعاون والتواصل مع الآخرين، مما يعزز لديهم مهارات العمل الجماعي والتعبير عن الذات. وعندما يرون أعمالهم الفنية تلاقي التقدير من الأهل والمعلمين، تزداد ثقتهم بأنفسهم وقدراتهم الإبداعية.</p>
+                </div>
             </div>
             <div class="grid md:grid-cols-5 gap-10">
                 <div class="md:col-span-2 bg-white p-8 rounded-xl shadow-2xl transition-transform duration-300 hover:scale-[1.02] hover:shadow-3xl fade-in-slide-left">
-                    <h3 class="text-3xl font-bold mb-4 text-[#6B4F4F]">🌍 للحفاظ على البيئة</h3>
-                    <p class="leading-relaxed text-lg">يترك الإنسان خلفه يومياً كميات كبيرة من المواد المستعملة التي ينتهي بها المطاف ملقاة في أماكن تجميع النفايات، مما يشكل حملاً ثقيلاً على البيئة خاصة إذا كانت هذه المواد تندرج تحت قائمة المواد التي يصعب التخلص منها. استخدام المخلفات في الفن يقلل من هذا العبء بشكل كبير، ويعلم الأطفال قيمة الموارد وأهمية الحفاظ عليها، ليس فقط من منظور الاستهلاك ولكن من خلال إعطاء حياة جديدة ومبتكرة للأشياء التي كانت ستصبح مهملات. هذا يساهم في بناء جيل واعٍ ومستدام يدرك أهمية الحفاظ على موارده الطبيعية، ويعكس مفهوم **الاقتصاد الدائري** حيث يتم إعادة استخدام الموارد وتقليل الهدر.</p>
+                    <h3 class="text-3xl font-bold mb-4 text-[#6B4F4F] text-right">🌍 للحفاظ على البيئة</h3>
+                    <p class="leading-relaxed text-lg text-right">يترك الإنسان خلفه يومياً كميات كبيرة من المواد المستعملة التي ينتهي بها المطاف ملقاة في أماكن تجميع النفايات، مما يشكل حملاً ثقيلاً على البيئة خاصة إذا كانت هذه المواد تندرج تحت قائمة المواد التي يصعب التخلص منها. استخدام المخلفات في الفن يقلل من هذا العبء بشكل كبير، ويعلم الأطفال قيمة الموارد وأهمية الحفاظ عليها، ليس فقط من منظور الاستهلاك ولكن من خلال إعطاء حياة جديدة ومبتكرة للأشياء التي كانت ستصبح مهملات. هذا يساهم في بناء جيل واعٍ ومستدام يدرك أهمية الحفاظ على موارده الطبيعية، ويعكس مفهوم **الاقتصاد الدائري** حيث يتم إعادة استخدام الموارد وتقليل الهدر.</p>
                 </div>
                 <div class="md:col-span-3 bg-white p-8 rounded-xl shadow-2xl transition-transform duration-300 hover:scale-[1.02] hover:shadow-3xl fade-in-slide-right">
-                    <h3 class="text-3xl font-bold mb-4 text-[#6B4F4F]">🌱 لتنمية الطفل</h3>
+                    <h3 class="text-3xl font-bold mb-4 text-[#6B4F4F] text-right">🌱 لتنمية الطفل</h3>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-6 text-center">
                         <div class="p-4 bg-[#FDF5E6] rounded-lg shadow-md hover:shadow-xl hover:translate-y-[-5px] transition-all duration-300 transform">
                             <span class="text-4xl mb-2 block">🎨</span>
@@ -189,15 +233,21 @@
             </div>
         </section>
 
-        <section id="materials" class="mb-24">
-            <h2 class="text-4xl font-bold text-center text-[#8B5A2B] mb-10 pb-4 border-b-2 border-[#D2B48C] section-header-animation">المعرض الإبداعي: كنز من الخامات</h2>
-             <div class="text-center mb-10 max-w-4xl mx-auto fade-in-slide-up">
+        <section id="materials" class="mb-24 section-reveal">
+            <h2 class="text-4xl font-bold text-center text-[#8B5A2B] mb-10 pb-4 border-b-2 border-[#D2B48C]">المعرض الإبداعي: كنز من الخامات</h2>
+             <div class="text-right mb-10 max-w-4xl mx-auto">
                 <p class="text-lg leading-relaxed">البيئة من حولنا مليئة بالمواد التي يمكن تحويلها إلى أعمال فنية مدهشة ووسائل تعليمية غير مكلفة. هذا القسم هو دليلك لاستكشاف أنواع مختلفة من الخامات البيئية التي يمكن لمعلمة الروضة والأطفال الاستفادة منها. ستجد هنا أمثلة على خامات من المنزل، ومن الطبيعة، وكذلك بقايا ومستهلكات من صناعات مختلفة. يمكنك التنقل بين الفئات لاكتشاف الإمكانيات اللامحدودة لهذه "الوسائل البدائية"، واستخدم شريط البحث للعثور على خامات محددة أو أفكار لاستخدامها في مشاريعكم الفنية. يطبق هذا القسم مبادئ **تجربة المستخدم (UX)** و**هندسة المعلومات** من خلال تصنيف المحتوى لتسهيل البحث وتقليل الحمل المعرفي على المستخدم، مما يجعل استكشاف الخامات أكثر كفاءة وإلهاماً.</p>
+                <button class="toggle-text-btn mt-4 px-6 py-2 bg-[#8B5A2B] text-white rounded-full shadow-md hover:bg-[#6B4F4F] transition-colors duration-300 button-effect">اقرأ المزيد</button>
+                <div class="expandable-content hidden mt-4 text-right">
+                    <p class="text-md leading-relaxed mb-3">يعتبر هذا المعرض بمثابة خزان للموارد والأفكار، حيث يبرز القيمة الفنية والتعليمية للمواد التي قد تُعتبر في العادة "نفايات". من علاقات الملابس المعدنية إلى نوى التمر وقشور البيض، كل مادة تحمل في طياتها إمكانية التحول إلى قطعة فنية أو وسيلة تعليمية مبتكرة.</p>
+                    <p class="text-md leading-relaxed mb-3">من خلال استكشاف الفئات المختلفة (من المنزل، من الطبيعة، بقايا ومستهلكات)، يمكن للمستخدمين التعرف على أمثلة عملية لكيفية استغلال هذه الخامات. على سبيل المثال، يمكن تحويل إطارات السيارات التالفة إلى ديكورات منزلية فريدة، أو استخدام بقايا القماش في صناعة دمى أطفال جذابة. هذه الأمثلة ليست مجرد أفكار، بل هي دعوة للتفكير الإبداعي والتجريب.</p>
+                    <p class="text-md leading-relaxed">خاصية البحث المدمجة تعزز تجربة المستخدم من خلال تمكين الوصول السريع إلى معلومات محددة. بدلاً من تصفح جميع الخامات، يمكن للمستخدم ببساطة البحث عن "زجاجات" أو "كرتون" للحصول على الأفكار ذات الصلة. هذا يقلل من الجهد المعرفي المطلوب ويعزز كفاءة الاستخدام، وهو تطبيق مباشر لمبادئ هندسة المعلومات في تسهيل الوصول إلى المحتوى.</p>
+                </div>
             </div>
-            <div class="flex flex-col sm:flex-row justify-center items-center mb-10 space-y-4 sm:space-y-0 sm:space-x-4 sm:space-x-reverse">
-                <button data-category="home" class="tab-button px-6 py-3 rounded-full font-bold text-lg bg-[#D2B48C] text-[#6B4F4F] shadow-lg transition-all duration-300 hover:bg-[#8B5A2B] hover:text-white hover:shadow-xl">من المنزل</button>
-                <button data-category="nature" class="tab-button px-6 py-3 rounded-full font-bold text-lg bg-[#D2B48C] text-[#6B4F4F] shadow-lg transition-all duration-300 hover:bg-[#8B5A2B] hover:text-white hover:shadow-xl">من الطبيعة</button>
-                <button data-category="scraps" class="tab-button px-6 py-3 rounded-full font-bold text-lg bg-[#D2B48C] text-[#6B4F4F] shadow-lg transition-all duration-300 hover:bg-[#8B5A2B] hover:text-white hover:shadow-xl">بقايا ومستهلكات</button>
+            <div class="flex flex-col sm:flex-row justify-end items-center mb-10 space-y-4 sm:space-y-0 sm:space-x-4 sm:space-x-reverse">
+                <button data-category="home" class="tab-button px-6 py-3 rounded-full font-bold text-lg bg-[#D2B48C] text-[#6B4F4F] shadow-lg transition-all duration-300 hover:bg-[#8B5A2B] hover:text-white hover:shadow-xl button-effect">من المنزل</button>
+                <button data-category="nature" class="tab-button px-6 py-3 rounded-full font-bold text-lg bg-[#D2B48C] text-[#6B4F4F] shadow-lg transition-all duration-300 hover:bg-[#8B5A2B] hover:text-white hover:shadow-xl button-effect">من الطبيعة</button>
+                <button data-category="scraps" class="tab-button px-6 py-3 rounded-full font-bold text-lg bg-[#D2B48C] text-[#6B4F4F] shadow-lg transition-all duration-300 hover:bg-[#8B5A2B] hover:text-white hover:shadow-xl button-effect">بقايا ومستهلكات</button>
                 <input type="text" id="material-search" placeholder="ابحث عن خامة..." class="mt-4 sm:mt-0 p-3 rounded-full border border-[#D2B48C] shadow-md focus:ring-2 focus:ring-[#8B5A2B] focus:border-transparent transition-all duration-300 text-right">
             </div>
             
@@ -206,61 +256,63 @@
             </div>
         </section>
 
-        <section id="teacher-role" class="mb-24">
-            <h2 class="text-4xl font-bold text-center text-[#8B5A2B] mb-10 pb-4 border-b-2 border-[#D2B48C] section-header-animation">خارطة الطريق: دور المعلمة</h2>
-            <div class="text-center mb-10 max-w-4xl mx-auto fade-in-slide-up">
+        <section id="teacher-role" class="mb-24 section-reveal">
+            <h2 class="text-4xl font-bold text-center text-[#8B5A2B] mb-10 pb-4 border-b-2 border-[#D2B48C]">خارطة الطريق: دور المعلمة</h2>
+            <div class="text-right mb-10 max-w-4xl mx-auto">
                 <p class="text-lg leading-relaxed">تلعب معلمة رياض الأطفال دوراً محورياً في تحويل فكرة إعادة التدوير الفني إلى واقع ملموس ومثمر في بيئة الروضة وفي حياة الأطفال. هذا القسم يوضح الخطوات المنظمة والمدروسة التي تمكنها من خلق بيئة تعليمية محفزة تشجع الأطفال على الإبداع وتغرس فيهم قيمًا بيئية واجتماعية هامة تدوم مدى الحياة. يعكس هذا التسلسل الإرشادي **الأطر التربوية الفعالة** في تعليم الفنون والوعي البيئي، مؤكداً على أهمية **الشراكة المجتمعية** في تحقيق أقصى استفادة من الأنشطة التعليمية. انقر على كل خطوة لمعرفة المزيد من التفاصيل حول كيفية تطبيقها عملياً.</p>
+                <button class="toggle-text-btn mt-4 px-6 py-2 bg-[#8B5A2B] text-white rounded-full shadow-md hover:bg-[#6B4F4F] transition-colors duration-300 button-effect">اقرأ المزيد</button>
+                <div class="expandable-content hidden mt-4 text-right">
+                    <p class="text-md leading-relaxed mb-3">دور المعلمة يتجاوز مجرد تقديم النشاط الفني؛ إنها القائدة التي تلهم وتوجه. من خلال تنفيذ هذه الخطوات، تساهم المعلمة في بناء جيل من الأطفال لا يمتلكون فقط المهارات الفنية، بل أيضاً الوعي البيئي والاجتماعي. هذه الأنشطة توفر للمعلمات "طوق النجاة" من تكلفة شراء الوسائل التعليمية، وتمكنهم من ابتكار وسائل جديدة باستمرار.</p>
+                    <p class="text-md leading-relaxed mb-3">إن دمج الفن بالوعي البيئي ليس فقط مفيداً للأطفال، بل هو أيضاً فرصة للمعلمات لتنمية قدراتهن الإبداعية والابتكارية. من خلال تنظيم ورش عمل متخصصة، يمكن للمعلمات تبادل الخبرات والأفكار حول كيفية استخدام الخامات البيئية بأكثر الطرق فعالية وجاذبية. هذا يضمن أن تكون العملية التعليمية ديناميكية ومتطورة باستمرار.</p>
+                    <p class="text-md leading-relaxed">تُعد الشراكة مع الوالدين والأخوة عنصراً حاسماً في تعزيز التعلم. عندما يشارك أفراد الأسرة في الأنشطة الفنية البيئية، فإنهم يدعمون رسالة المعلمة ويعززون قيم الوعي البيئي داخل المنزل. المسابقات والمعارض الفنية، بدورها، توفر منصة للأطفال لعرض إبداعاتهم، مما يغرس فيهم الثقة بالنفس ويحفزهم على مواصلة الابتكار، ويجعل الفن البيئي جزءاً لا يتجزأ من ثقافة المجتمع.</p>
+                </div>
             </div>
             <div class="relative max-w-3xl mx-auto">
-                <div class="absolute right-1/2 w-2 h-full bg-[#D2B48C] transform translate-x-1/2 rounded-full"></div>
+                <div class="absolute left-1/2 w-2 h-full bg-[#D2B48C] transform -translate-x-1/2 rounded-full"></div> <!-- Vertical line centered -->
                 <div class="space-y-16">
-                    <!-- التشجيع ونشر الثقافة -->
-                    <div class="flex items-center w-full timeline-item-wrapper">
-                        <div class="w-1/2 text-left pr-10 fade-in-slide-left">
-                            <div class="bg-white p-6 rounded-xl shadow-lg transition-transform duration-300 hover:scale-[1.03] hover:shadow-xl cursor-pointer" data-detail-target="detail1">
+                    <!-- Each timeline item is now flex with content pushed to the right -->
+                    <div class="flex justify-end timeline-item-wrapper">
+                        <div class="w-full md:w-1/2 md:mr-auto px-4 text-right fade-in-slide-right">
+                            <div class="bg-white p-6 rounded-xl shadow-lg transition-transform duration-300 hover:scale-[1.03] hover:shadow-xl cursor-pointer button-effect" data-detail-target="detail1">
                                 <h3 class="font-bold text-2xl text-[#6B4F4F] mb-2">التشجيع ونشر الثقافة</h3>
                                 <p class="text-md leading-relaxed">حث الأطفال على رؤية القيمة في المواد المستهلكة ونشر ثقافة إعادة الاستخدام للحد من النفايات.</p>
-                                <div id="detail1" class="mt-4 text-gray-700 hidden text-sm">
+                                <div id="detail1" class="detail-content mt-4 text-gray-700 text-sm">
                                     <p>إن الخطوة الأولى هي غرس الوعي والقيم البيئية لدى الأطفال في سنواتهم الأولى. يتضمن ذلك تنظيم جلسات حوارية مبسطة حول أهمية البيئة وكيف يمكننا حمايتها، ليس فقط من خلال الأنشطة الفنية، بل أيضاً من خلال تغيير السلوكيات اليومية. يمكن للمعلمة عرض ملصقات تحض على استخدام وإعادة تدوير الخامات، مما يعزز الشعور بالقيادة والمسؤولية لدى الأطفال ويشكل سلوكهم بطريقة إيجابية.</p>
                                 </div>
                             </div>
                         </div>
-                         <div class="w-1/2 pl-10"></div>
                     </div>
                      <!-- ورش عمل وبرامج -->
-                    <div class="flex items-center w-full timeline-item-wrapper left-aligned">
-                        <div class="w-1/2 pr-10"></div>
-                        <div class="w-1/2 text-right pl-10 fade-in-slide-right">
-                            <div class="bg-white p-6 rounded-xl shadow-lg transition-transform duration-300 hover:scale-[1.03] hover:shadow-xl cursor-pointer" data-detail-target="detail2">
+                    <div class="flex justify-end timeline-item-wrapper">
+                        <div class="w-full md:w-1/2 md:mr-auto px-4 text-right fade-in-slide-right">
+                            <div class="bg-white p-6 rounded-xl shadow-lg transition-transform duration-300 hover:scale-[1.03] hover:shadow-xl cursor-pointer button-effect" data-detail-target="detail2">
                                 <h3 class="font-bold text-2xl text-[#6B4F4F] mb-2">ورش عمل وبرامج</h3>
                                 <p class="text-md leading-relaxed">تنظيم ورش عمل تفاعلية للأطفال وبرامج تدريبية متخصصة للمعلمات.</p>
-                                <div id="detail2" class="mt-4 text-gray-700 hidden text-sm">
+                                <div id="detail2" class="detail-content mt-4 text-gray-700 text-sm">
                                     <p>تهدف هذه الورش إلى تعريف الأطفال والمعلمات بأنواع الخامات البيئية المتاحة (مثل الورق، البلاستيك، بقايا القماش، وغيرها من الخامات الطبيعية أو المستهلكة) وكيفية تحويلها إلى أعمال فنية جميلة ومفيدة. يجب أن تكون الأنشطة مناسبة لقدرات الطفل في مرحلة ما قبل المدرسة، مع تقديم شرح مفصل لتطبيق الأمثلة بطريقة منطقية متسلسلة. يمكن للمعلمات الاستفادة من برامج تدريبية تركز على فنون إعادة التدوير لابتكار وسائل تعليمية جديدة وغير مكلفة.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <!-- مشاركة الوالدين -->
-                    <div class="flex items-center w-full timeline-item-wrapper">
-                        <div class="w-1/2 text-left pr-10 fade-in-slide-left">
-                           <div class="bg-white p-6 rounded-xl shadow-lg transition-transform duration-300 hover:scale-[1.03] hover:shadow-xl cursor-pointer" data-detail-target="detail3">
+                    <div class="flex justify-end timeline-item-wrapper">
+                        <div class="w-full md:w-1/2 md:mr-auto px-4 text-right fade-in-slide-right">
+                           <div class="bg-white p-6 rounded-xl shadow-lg transition-transform duration-300 hover:scale-[1.03] hover:shadow-xl cursor-pointer button-effect" data-detail-target="detail3">
                                 <h3 class="font-bold text-2xl text-[#6B4F4F] mb-2">مشاركة الوالدين</h3>
                                 <p class="text-md leading-relaxed">فتح قنوات للتواصل الفعال مع أولياء الأمور وإشراكهم بنشاط مع أطفالهم.</p>
-                                <div id="detail3" class="mt-4 text-gray-700 hidden text-sm">
+                                <div id="detail3" class="detail-content mt-4 text-gray-700 text-sm">
                                     <p>لتعزيز الفائدة القصوى، يجب فتح فرص لمشاركة الوالدين والأخوة مع الطفل في تنفيذ منتجات فنية من المستهلكات والخامات البيئية. يمكن للمعلمة تنظيم لقاءات تعريفية بالآباء والأمهات، وتقديم أمثلة لمشاريع فنية بسيطة يمكن تنفيذها في المنزل باستخدام الخامات البيئية، مما يعزز الرابط الأسري ويدعم العملية التعليمية خارج الروضة، ويغرس في الأسرة كلها ثقافة الإبداع وإعادة التدوير.</p>
                                 </div>
                             </div>
                         </div>
-                         <div class="w-1/2 pl-10"></div>
                     </div>
                      <!-- المسابقات والمعارض -->
-                    <div class="flex items-center w-full timeline-item-wrapper left-aligned">
-                        <div class="w-1/2 pr-10"></div>
-                        <div class="w-1/2 text-right pl-10 fade-in-slide-right">
-                            <div class="bg-white p-6 rounded-xl shadow-lg transition-transform duration-300 hover:scale-[1.03] hover:shadow-xl cursor-pointer" data-detail-target="detail4">
+                    <div class="flex justify-end timeline-item-wrapper">
+                        <div class="w-full md:w-1/2 md:mr-auto px-4 text-right fade-in-slide-right">
+                            <div class="bg-white p-6 rounded-xl shadow-lg transition-transform duration-300 hover:scale-[1.03] hover:shadow-xl cursor-pointer button-effect" data-detail-target="detail4">
                                 <h3 class="font-bold text-2xl text-[#6B4F4F] mb-2">المسابقات والمعارض</h3>
                                 <p class="text-md leading-relaxed">تنظيم مسابقات ومعارض فنية دورية لعرض أعمال الأطفال الإبداعية.</p>
-                                <div id="detail4" class="mt-4 text-gray-700 hidden text-sm">
+                                <div id="detail4" class="detail-content mt-4 text-gray-700 text-sm">
                                     <p>هذه الفعاليات تزيد من ثقة الأطفال بأنفسهم بشكل كبير، وتحفزهم على الابتكار والتفوق المستمر. تعد هذه المعارض فرصة رائعة لعرض مواهبهم أمام الأهل والمجتمع، مما يعزز لديهم الشعور بالإنجاز والتقدير. كما أنها تساهم في نشر الوعي بأهمية إعادة التدوير والأعمال الفنية المستوحاة من البيئة على نطاق أوسع في المجتمع.</p>
                                 </div>
                             </div>
@@ -270,10 +322,15 @@
             </div>
         </section>
 
-        <section id="impact-chart" class="mb-24">
-             <h2 class="text-4xl font-bold text-center text-[#8B5A2B] mb-10 pb-4 border-b-2 border-[#D2B48C] section-header-animation">مقياس الأثر: نظرة على النتائج</h2>
-              <div class="text-center mb-10 max-w-4xl mx-auto fade-in-slide-up">
+        <section id="impact-chart" class="mb-24 section-reveal">
+             <h2 class="text-4xl font-bold text-center text-[#8B5A2B] mb-10 pb-4 border-b-2 border-[#D2B48C]">مقياس الأثر: نظرة على النتائج</h2>
+              <div class="text-right mb-10 max-w-4xl mx-auto">
                 <p class="text-lg leading-relaxed">إن مشاركة الطفل في الأعمال الفنية البيئية لها تأثير عميق ومتعدد الأوجه على نموه الشامل، وتعد بمثابة طوق نجاة للمعلمة التي ترهقها تكلفة إعداد وشراء الوسائل التعليمية. هذا الرسم البياني التفاعلي يوضح أبرز الجوانب التي تتطور لدى الطفل من خلال هذه الأنشطة، مما يؤكد على أهميتها كأداة تربوية شاملة ومبتكرة. لاحظ كيف تساهم هذه الأنشطة في صقل مهاراته الإبداعية، الاجتماعية، المعرفية، وحتى العاطفية، وتحويله إلى متعلم نشيط ومفكر. يمثل هذا التصوير البياني تطبيقاً لمبادئ **تصور البيانات (Data Visualization)**، حيث يتم تحويل المعلومات المعقدة إلى شكل مرئي سهل الفهم، مما يعزز الاستنتاج وتحديد الأولويات.</p>
+                <button class="toggle-text-btn mt-4 px-6 py-2 bg-[#8B5A2B] text-white rounded-full shadow-md hover:bg-[#6B4F4F] transition-colors duration-300 button-effect">اقرأ المزيد</button>
+                <div class="expandable-content hidden mt-4 text-right">
+                    <p class="text-md leading-relaxed mb-3">يُظهر الرسم البياني بوضوح التأثير الإيجابي لمشاريع الفن البيئي على الأطفال في مجالات رئيسية مثل الابتكار، والتركيز، والمهارات الاجتماعية. هذه المؤشرات الحيوية لا تُظهر فقط نجاح النهج التعليمي، بل تؤكد أيضاً على أهمية الاستثمار في الأنشطة التي تدمج التعلم العملي بالإبداع. إن تحليل هذه البيانات يساعد المعلمات وصناع القرار على فهم القيمة الحقيقية لهذه الأساليب التربوية، مما يدعم اتخاذ قرارات مستنيرة لتطبيقها على نطاق أوسع.</p>
+                    <p class="text-md leading-relaxed">علاوة على ذلك، فإن القدرة على تتبع وقياس هذا الأثر تسمح بالتحسين المستمر للبرامج التعليمية. من خلال فهم أي المجالات تتطور بشكل أقوى، يمكن للمعلمات تصميم أنشطة أكثر استهدافاً وفعالية، مما يضمن حصول كل طفل على أقصى استفادة من هذه التجربة التعليمية الفريدة. هذا النهج القائم على البيانات يعزز الشفافية والمساءلة في العملية التربوية.</p>
+                </div>
             </div>
             <div class="bg-white p-8 rounded-xl shadow-2xl">
                  <div class="chart-container">
@@ -283,15 +340,26 @@
         </section>
     </main>
 
-    <a href="#" id="scrollToTopBtn" class="scroll-to-top items-center justify-center">
+    <a href="#" id="scrollToTopBtn" class="scroll-to-top">
         <span class="text-2xl">⬆️</span>
     </a>
 
-    <footer class="bg-[#C09A78] mt-20 py-8">
-        <div class="container mx-auto text-center text-[#6B4F4F] text-lg">
-            <p>&copy; 2025 - مورد تفاعلي حول المهارات الأساسية في التربية الفنية. كل الأفكار مستوحاة من الفصل الأول من الوثيقة.</p>
-            <p class="mt-2 font-semibold">مبرمج: اسماعيل سيد</p>
-            <p class="mt-1 text-sm">الهدف: بناء جيل مبدع وواعٍ بيئياً من خلال الفن وإعادة التدوير.</p>
+            <footer class="bg-slate-800 text-white py-8 mt-20">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-6">
+                <h3 class="text-2xl font-bold mb-2">عن المشروع</h3>
+                <p class="text-slate-300 mb-4">تم تطوير هذا المحتوى التفاعلي لتسهيل فهم واستيعاب مفاهيم الأجهزة التعليمية</p>
+                <div class="flex flex-col items-center space-y-2">
+                    <p><span class="text-teal-400">برمجة وتطوير:</span> إسماعيل سيد</p>
+                    <p><span class="text-amber-400">الهدف:</span> تحويل المحتوى التعليمي إلى تجربة تفاعلية</p>
+                    <p><span class="text-indigo-400">رسالتنا:</span> جعل التعلم أكثر متعة وفاعلية</p>
+                </div>
+            </div>
+            <div class="text-center text-sm text-slate-400 border-t border-slate-700 pt-4">
+                <p>جميع الحقوق محفوظة ل ابو السباع © ٢٠٢٥</p>
+                <p>التصميم والتطوير: إسماعيل سيد</p>
+                <p>رقم التواصل : 01029843800</p>
+            </div>
         </div>
     </footer>
 
@@ -470,34 +538,97 @@
                     const targetId = item.getAttribute('data-detail-target');
                     const detailElement = document.getElementById(targetId);
                     if (detailElement) {
-                        detailElement.classList.toggle('hidden');
+                        detailElement.classList.toggle('show'); // Toggle 'show' class for max-height transition
                         // Optional: Smooth scroll to the clicked item if it's not fully in view after expanding
-                        if (!detailElement.classList.contains('hidden')) {
+                        if (detailElement.classList.contains('show')) {
                             item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                         }
                     }
                 });
             });
 
-            // Intersection Observer for section headers and content (initial load)
+            // Toggle "Read More" functionality for intro paragraphs
+            document.querySelectorAll('.toggle-text-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const expandableContent = button.nextElementSibling; // The div with expandable content
+                    if (expandableContent) {
+                        expandableContent.classList.toggle('hidden');
+                        if (expandableContent.classList.contains('hidden')) {
+                            button.textContent = 'اقرأ المزيد';
+                        } else {
+                            button.textContent = 'اقرأ أقل';
+                        }
+                    }
+                });
+            });
+
+
+            // Intersection Observer for section headers and main section reveal
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            const sectionObserverOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.2 // Trigger when 20% of the section is visible
+            };
+
+            const sectionObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    // Animate section into view
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        // Activate corresponding nav link
+                        const sectionId = entry.target.id;
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${sectionId}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    } else {
+                        // Deactivate nav link if section is not intersecting (e.g., scrolled past)
+                        const sectionId = entry.target.id;
+                        const correspondingLink = document.querySelector(`.nav-link[href="#${sectionId}"]`);
+                        if (correspondingLink && !entry.isIntersecting) {
+                             // Only deactivate if another section is not active
+                             const anySectionActive = Array.from(sections).some(sec => {
+                                const rect = sec.getBoundingClientRect();
+                                return rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2;
+                             });
+                             if (!anySectionActive) { // If no other section is in the middle
+                                correspondingLink.classList.remove('active');
+                             }
+                        }
+                    }
+                });
+            }, sectionObserverOptions);
+
+            // Observe all sections
+            sections.forEach(sec => {
+                sec.classList.add('section-reveal'); // Add base class for animation
+                sectionObserver.observe(sec);
+            });
+
+            // Intersection Observer for sub-elements (headers, cards, timeline items)
             const elementsToAnimate = document.querySelectorAll('.section-header-animation, .fade-in-slide-up, .fade-in-slide-left, .fade-in-slide-right');
-            const observerOptions = {
+            const subElementObserverOptions = {
                 root: null,
                 rootMargin: '0px',
                 threshold: 0.1
             };
 
-            const observer = new IntersectionObserver((entries, observer) => {
+            const subElementObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('visible');
                         observer.unobserve(entry.target);
                     }
                 });
-            }, observerOptions);
+            }, subElementObserverOptions);
 
             elementsToAnimate.forEach(el => {
-                observer.observe(el);
+                subElementObserver.observe(el);
             });
 
             // Scroll to Top Button functionality
@@ -518,6 +649,26 @@
                     behavior: 'smooth'
                 });
             });
+
+            // Initial active nav link check for page load (handles cases where content is above scroll threshold)
+            function setActiveNavLinkOnLoad() {
+                const scrollPosition = window.scrollY;
+                sections.forEach(sec => {
+                    const rect = sec.getBoundingClientRect();
+                    // If the section is in the viewport
+                    if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
+                        const sectionId = sec.id;
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${sectionId}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }
+            setActiveNavLinkOnLoad(); // Call on load
+            window.addEventListener('scroll', setActiveNavLinkOnLoad); // And on scroll for continuous check
         });
     </script>
 </body>
